@@ -1,5 +1,9 @@
+import java.util.HashSet;
+
 public class WordleSolver {
-    private String[] words = null;
+    private String[] words;
+    private HashSet<Character> notInWord = new HashSet<>();
+
 
     public WordleSolver(String[] words)
     {

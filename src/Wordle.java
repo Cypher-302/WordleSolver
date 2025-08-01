@@ -1,6 +1,7 @@
 // Assumes that all words passed in are valid, and assumes that all words passed in are in lowercase (this is for efficiency)
 public class Wordle {
     private final String finalWord;
+    public static final byte WORD_LENGTH = 5;
 
     public enum LetterInfo {
         NOT_IN_WORD, WRONG_POSITION, CORRECT
@@ -14,9 +15,9 @@ public class Wordle {
     // always returns a LetterInfo array of length 5
     public LetterInfo[] processGuess(String guess)
     {
-        LetterInfo[] guessInfo = new LetterInfo[5];
+        LetterInfo[] guessInfo = new LetterInfo[WORD_LENGTH];
         char[] c = guess.toCharArray();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < WORD_LENGTH; i++) {
             if (finalWord.indexOf(c[i]) < 0)
                 guessInfo[i] = LetterInfo.NOT_IN_WORD;
             else if (finalWord.indexOf(c[i]) == i)
@@ -30,21 +31,25 @@ public class Wordle {
     public String guessToString(LetterInfo[] guessInfo)
     {
         StringBuilder output = new StringBuilder();
-        for (int i = 0; i < 5; i++)
+        output.append("[");
+        for (int i = 0; i < WORD_LENGTH; i++)
         {
             switch (guessInfo[i])
             {
                 case NOT_IN_WORD:
-                    output.append("⬜");
+                    output.append("-1");
                     break;
                 case WRONG_POSITION:
-                    output.append("🟨");
+                    output.append("0");
                     break;
                 case CORRECT:
-                    output.append("🟩");
+                    output.append("1");
                     break;
             }
+            output.append(", ");
         }
+        output.delete(output.length() - 2, output.length());
+        output.append("]");
         return output.toString();
     }
 }
