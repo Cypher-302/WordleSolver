@@ -1,4 +1,4 @@
-import java.util.Arrays;
+import java.util.*;
 
 public class WordsAnalyser
 {
@@ -10,7 +10,7 @@ public class WordsAnalyser
         this.words = words;
     }
 
-    public int[][] letterCountPerPosition()
+    public LinkedHashMap<Character, Integer>[] letterCountPerPosition()
     {
         int[][] countPerPosition = new int[Wordle.WORD_LENGTH][ALPHABET_LENGTH];
 
@@ -22,35 +22,81 @@ public class WordsAnalyser
                 countPerPosition[i][alphabetPosition]++;
             }
         }
+        System.out.println(Arrays.deepToString(countPerPosition));
 
+        Map<Character, Integer>[] letterCountPerPosition = new HashMap[Wordle.WORD_LENGTH];
         for (int i = 0; i < Wordle.WORD_LENGTH; i++)
         {
-            Arrays.sort(countPerPosition[i]);
-            for (int left=0, right=ALPHABET_LENGTH-1; left<right; left++, right--)// creds: https://stackoverflow.com/questions/215271/sort-large-arrays-of-primitive-types-in-descending-order
-            {
-                // exchange the first and last (going to the middle)
-                int temp = countPerPosition[i][left];
-                countPerPosition[i][left]  = countPerPosition[i][right];
-                countPerPosition[i][right] = temp;
-            }
-        }
-
-        return countPerPosition;
-    }
-
-    public double[][] letterDensityPerPosition()
-    {
-        int[][] countPerPosition = letterCountPerPosition();
-        double[][] densityPerPosition = new double[Wordle.WORD_LENGTH][ALPHABET_LENGTH];
-
-        for (int i = 0; i < Wordle.WORD_LENGTH; i++)
-        {
+            letterCountPerPosition[i] = new HashMap<>();
             for (int j = 0; j < ALPHABET_LENGTH; j++)
             {
-                densityPerPosition[i][j] = countPerPosition[i][j] / (double) words.length;
+                letterCountPerPosition[i].put((char) (97 + j), countPerPosition[i][j]);
             }
         }
 
-        return densityPerPosition;
+        LinkedHashMap<Character, Integer>[] sortedFrequencies = new LinkedHashMap[Wordle.WORD_LENGTH];
+
+        for (int i = 0; i < Wordle.WORD_LENGTH; i++)
+        {
+                List<Map.Entry<Character, Integer>> sortedEntries = letterCountPerPosition[i].entrySet()
+                        .stream()
+                        .sorted(Map.Entry.<Character, Integer>comparingByValue().reversed()) // reverse map based on value
+                        .toList();
+
+                sortedFrequencies[i] = new LinkedHashMap<>();
+                for (Map.Entry<Character, Integer> entry : sortedEntries)
+                {
+                    sortedFrequencies[i].put(entry.getKey(), entry.getValue());
+                }
+        }
+
+        return sortedFrequencies;
+    }
+
+    public String generateStaticDeclarationForLetterFrequency()
+    {
+        // OUTPUT FORMAT:
+
+        // <access modifiers> <type> <name> = <new statically defined array>
+        // {
+        // <tab> new LinkedHashMap<>(Map.ofEntries(
+        // <tab> <tab> Map.entry(... <4 per line>
+        // ...
+        // <tab> )),
+        //
+        // <tab> ... <other 4 LinkedHashMaps>
+        // <tab> ))
+        // };
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("public static final LinkedHashMap<Character, Integer>[] SORTED_FREQUENCIES = new LinkedHashMap[]")
+                .append("{\n");
+
+        LinkedHashMap<Character, Integer>[] sortedFrequencies = letterCountPerPosition();
+
+        for (int i = 0; i < Wordle.WORD_LENGTH; i++)
+        {
+            int count = 0;
+            sb.append("\tnew LinkedHashMap<>(Map.ofEntries(");
+            StringBuilder letterMapBuilder = new StringBuilder();
+            for (char letter : sortedFrequencies[i].keySet())
+            {
+                if (count % 4 == 0)
+                    letterMapBuilder.append(" \n\t");
+
+                letterMapBuilder.append("\tMap.entry('")
+                        .append(letter)
+                        .append("', ")
+                        .append(sortedFrequencies[i].get(letter))
+                        .append("),");
+                count++;
+                //System.out.println(count);
+            }
+            sb.append(letterMapBuilder.substring(0, letterMapBuilder.length() - 1));
+            sb.append("\n\t)),\n\n");
+        }
+        String output = sb.substring(0, sb.length() - 3);
+        output += "\n};";
+        return output;
     }
 }
