@@ -60,6 +60,10 @@ public class WordleSolver
     private Map<Integer, Character> takeoverSpots = new HashMap<Integer, Character>();
     private Map<Integer, Character> lettersInCorrectPos = new HashMap<Integer, Character>();
 
+    // dont do all these separate maps, just go through the returned GUESS_INFO in a classical for loop, using GUESS_INFO and guess string
+    // hm but this only works for one guess
+    // but that doesnt matter if I narrow down the possibleWords list each time
+
     public WordleSolver(List<String> initialWordList)
     {
         this.possibleWords = new ArrayList<>(initialWordList);;
