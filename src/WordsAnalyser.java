@@ -90,7 +90,6 @@ public class WordsAnalyser
                         .append(sortedFrequencies[i].get(letter))
                         .append("),");
                 count++;
-                //System.out.println(count);
             }
             sb.append(letterMapBuilder.substring(0, letterMapBuilder.length() - 1));
             sb.append("\n\t)),\n\n");
