@@ -3,9 +3,9 @@ import java.util.*;
 public class WordsAnalyser
 {
     public static final byte ALPHABET_LENGTH = 26;
-    private final String[] words;
+    private final List<String> words;
 
-    public WordsAnalyser(String[] words)
+    public WordsAnalyser(List<String> words)
     {
         this.words = words;
     }
@@ -16,9 +16,9 @@ public class WordsAnalyser
 
         for (int i = 0; i < Wordle.WORD_LENGTH; i++)
         {
-            for (int j = 0; j < words.length; j++)
+            for (int j = 0; j < words.size(); j++)
             {
-                int alphabetPosition = ((int) words[j].charAt(i)) - 97;
+                int alphabetPosition = ((int) words.get(j).charAt(i)) - 97;
                 countPerPosition[i][alphabetPosition]++;
             }
         }
@@ -57,45 +57,40 @@ public class WordsAnalyser
     {
         // OUTPUT FORMAT:
 
-        // <access modifiers> <type> <name> = <new statically defined array>
+        // public static final LinkedHashMap<Character, Integer>[] SORTED_FREQUENCIES;
+        // static
         // {
-        // <tab> new LinkedHashMap<>(Map.ofEntries(
-        // <tab> <tab> Map.entry(... <4 per line>
-        // ...
-        // <tab> )),
-        //
+        // <tab> SORTED_FREQUENCIES = new LinkedHashMap[5];
+        // <tab> SORTED_FREQUENCIES[<0-5>] = new LinkedHashMap<>();
+        // <tab> SORTED_FREQUENCIES[<0-5>].put('<letter>', <frequency>);
         // <tab> ... <other 4 LinkedHashMaps>
-        // <tab> ))
-        // };
+        // }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("public static final LinkedHashMap<Character, Integer>[] SORTED_FREQUENCIES = new LinkedHashMap[]")
-                .append("{\n");
+        sb.append("public static final LinkedHashMap<Character, Integer>[] SORTED_FREQUENCIES;\n")
+                .append("static\n")
+                .append("{\n")
+                .append("\tSORTED_FREQUENCIES = new LinkedHashMap[5];");
 
         LinkedHashMap<Character, Integer>[] sortedFrequencies = letterCountPerPosition();
 
         for (int i = 0; i < Wordle.WORD_LENGTH; i++)
         {
-            int count = 0;
-            sb.append("\tnew LinkedHashMap<>(Map.ofEntries(");
-            StringBuilder letterMapBuilder = new StringBuilder();
+            sb.append("\t\nSORTED_FREQUENCIES[")
+                    .append(i)
+                    .append("] = new LinkedHashMap<>();\n");
             for (char letter : sortedFrequencies[i].keySet())
             {
-                if (count % 4 == 0)
-                    letterMapBuilder.append(" \n\t");
-
-                letterMapBuilder.append("\tMap.entry('")
+                sb.append("\tSORTED_FREQUENCIES[")
+                        .append(i)
+                        .append("].put('")
                         .append(letter)
                         .append("', ")
                         .append(sortedFrequencies[i].get(letter))
-                        .append("),");
-                count++;
+                        .append(");\n");
             }
-            sb.append(letterMapBuilder.substring(0, letterMapBuilder.length() - 1));
-            sb.append("\n\t)),\n\n");
         }
-        String output = sb.substring(0, sb.length() - 3);
-        output += "\n};";
-        return output;
+        sb.append("}");
+        return sb.toString();
     }
 }

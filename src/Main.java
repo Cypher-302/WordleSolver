@@ -11,7 +11,7 @@ public class Main
 //        System.out.print("Enter final word to guess: ");
 //        String finalWord = input.nextLine();
 //        input.close();
-        final String finalWord = "sable";
+        final String finalWord = "hands";
         final String firstGuess = "salet";
 
         Scanner wordsReader;
@@ -30,12 +30,23 @@ public class Main
         //wordsList.toArray(words);
 
         WordleSolver wordleSolver = new WordleSolver(words);
-        wordleSolver.solve(firstGuess, finalWord);
+        System.out.println(wordleSolver.solve(firstGuess, finalWord));
+//        int attemptsCount = 0;
+//        int successCount = 0;
+//        int attemptsSum = 0;
+//        for (String word : words)
+//        {
+//            int attempt = wordleSolver.solve(firstGuess, word);
+//            attemptsSum += attempt;
+//            if (attempt <= 6)
+//                successCount++;
+//            attemptsCount++;
+//        }
+//        System.out.println("Avg attempts: " + attemptsSum / attemptsCount);
+//        System.out.println("Success: " + successCount);
+//        System.out.println("Attempts: " + attemptsSum);
 
         //WordsAnalyser wordsAnalyser = new WordsAnalyser(words);
-        //LinkedHashMap<Character, Integer>[] countPerPosition = wordsAnalyser.letterCountPerPosition();
-        //double[][] densityPerPosition = wordsAnalyser.letterDensityPerPosition();
-        //countPerPosition[0].get('a');
         //System.out.println(wordsAnalyser.generateStaticDeclarationForLetterFrequency());
 
 
